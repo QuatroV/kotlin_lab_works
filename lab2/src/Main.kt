@@ -1,8 +1,8 @@
 import java.util.*
 
 fun main() {
-//    task11();
-//    task12();
+    task11();
+    task12();
     println("Enter the n number for the matrix: ")
     val dimensionsOfTheMatrix = readln().toInt()
     var matrix = generateRandomMatrix(dimensionsOfTheMatrix)
