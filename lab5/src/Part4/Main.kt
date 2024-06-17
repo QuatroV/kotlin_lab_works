@@ -1,0 +1,84 @@
+package Part4
+
+import java.io.File
+import java.io.IOException
+
+// Пользовательские исключения для обработки ошибок ввода-вывода
+class FileReadException(message: String) : Exception(message)
+class FileWriteException(message: String) : Exception(message)
+
+// Функция для чтения файла
+fun readFile(filePath: String): List<String> {
+    return try {
+        File(filePath).readLines()
+    } catch (e: IOException) {
+        throw FileReadException("Ошибка чтения файла: $filePath")
+    }
+}
+
+// Функция для записи в файл
+fun writeFile(filePath: String, lines: List<String>) {
+    try {
+        File(filePath).bufferedWriter().use { out ->
+            lines.forEach { out.write(it + "\n") }
+        }
+    } catch (e: IOException) {
+        throw FileWriteException("Ошибка записи в файл: $filePath")
+    }
+}
+
+// Функция для замены "public" на "private"
+fun replacePublicWithPrivate(lines: List<String>): List<String> {
+    return lines.map { it.replace("public", "private") }
+}
+
+// Функция для обращения символов в каждой строке
+fun reverseLines(lines: List<String>): List<String> {
+    return lines.map { it.reversed() }
+}
+
+fun main(args: Array<String>) {
+    if (args.size < 2) {
+        println("Использование: <режим> <входной файл> <директория для вывода>")
+        println("Режимы: replace - заменить public на private, reverse - обратить строки")
+        return
+    }
+
+    val mode = args[0]
+    val inputFilePath = args[1]
+    val outputDirPath = args[2]
+
+    try {
+        val lines = readFile(inputFilePath)
+
+        // Создание директории для вывода, если она не существует
+        val outputDir = File(outputDirPath)
+        if (!outputDir.exists()) {
+            outputDir.mkdirs()
+        }
+
+        when (mode) {
+            "replace" -> {
+                val processedLines = replacePublicWithPrivate(lines)
+                val outputFilePath = "$outputDirPath/replaced_output.kt"
+                writeFile(outputFilePath, processedLines)
+                println("Результаты сохранены в файл: $outputFilePath")
+            }
+            "reverse" -> {
+                val processedLines = reverseLines(lines)
+                val outputFilePath = "$outputDirPath/reversed_output.kt"
+                writeFile(outputFilePath, processedLines)
+                println("Результаты сохранены в файл: $outputFilePath")
+            }
+            else -> {
+                println("Неизвестный режим: $mode")
+            }
+        }
+    } catch (e: FileReadException) {
+        println("Ошибка при чтении файла: ${e.message}")
+    } catch (e: FileWriteException) {
+        println("Ошибка при записи файла: ${e.message}")
+    } catch (e: Exception) {
+        println("Произошла ошибка: ${e.message}")
+    }
+}

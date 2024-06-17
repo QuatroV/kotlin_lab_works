@@ -1,7 +1,7 @@
 
 fun main(cmdArgs: Array<String>) {
-    task11()
-    task12(cmdArgs)
+//    task11()
+//    task12(cmdArgs)
     task2()
 }
 
